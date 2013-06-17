@@ -12,11 +12,7 @@ import com.example.tuner_test.R;
 import uiUtil.AnimationFactory;
 import tuner_audio.TunerEngine;
 
-/**
- * User: Yarden
- * Date: Dec 24, 2009
- * Time: 6:27:14 PM
- */
+
 public class Main extends Activity {
     private static final double[] FREQUENCIES = { 77.78, 82.41, 87.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81 ,174.61};
     private static final String[] NAME        = {  "D#",  "E",   "F",   "F#"  , "G" ,  "G#",   "A",    "A#",   "B",   "C",     "C#",   "D",   "D#"   ,"E"  ,   "F" };
