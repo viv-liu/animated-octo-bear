@@ -21,6 +21,7 @@ public class Main extends Activity {
     private static final double[] FREQUENCIES = { 77.78, 82.41, 87.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81 ,174.61};
     private static final String[] NAME        = {  "D#",  "E",   "F",   "F#"  , "G" ,  "G#",   "A",    "A#",   "B",   "C",     "C#",   "D",   "D#"   ,"E"  ,   "F" };
 
+    static MediaPlayer mMediaPlayer;
     TunerEngine tuner;
     final Handler mHandler = new Handler();
     final Runnable callback = new Runnable() {
@@ -68,18 +69,26 @@ public class Main extends Activity {
 
 	}
 
-    public void onStart(){
+    /*public void onStart(){
         super.onStart();
         playIntro(this);
         initLayoutState();
-    }
+    }*/
 
     @Override
     public void onPause(){
         if(tuner != null && tuner.isAlive()){
             tuner.close();
         }
+        mMediaPlayer.release();
         super.onPause();
+    }
+    
+    @Override
+    public void onResume() {
+    	playIntro(this);
+        initLayoutState();
+    	super.onResume();
     }
 
     int defaultColor;
@@ -206,6 +215,7 @@ public class Main extends Activity {
     }
 
     private static void playIntro(android.content.Context context){
-        MediaPlayer.create(context, R.raw.subbacultcha).start();
+        mMediaPlayer = MediaPlayer.create(context, R.raw.subbacultcha);
+        mMediaPlayer.start();
     }
 }

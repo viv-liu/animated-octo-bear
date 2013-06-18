@@ -29,10 +29,12 @@ public class TunerEngine extends Thread{
 
     final Handler mHandler;
     Runnable callback;
-
+    private boolean mPaused;
+    
     public TunerEngine(Handler mHandler,Runnable callback) {
         this.mHandler = mHandler;
         this.callback = callback;
+        mPaused = false;
         initAudioRecord();
     }
 
@@ -62,31 +64,44 @@ public class TunerEngine extends Thread{
     byte[] bufferRead;
 //    long l;
     public void run(){       // fft
-
         targetDataLine_.startRecording();
         bufferRead = new byte[READ_BUFFERSIZE];
         int n = -1;
-        while ( (n = targetDataLine_.read(bufferRead, 0,READ_BUFFERSIZE)) > 0 ) {
+        while ( (n = targetDataLine_.read(bufferRead, 0,READ_BUFFERSIZE)) > 0 && !mPaused) {
 //            l = System.currentTimeMillis();
             currentFrequency = processSampleData(bufferRead,SAMPLE_RATE);
 //            System.out.println("process time  = " + (System.currentTimeMillis() - l));
             if(currentFrequency > 0){
                 mHandler.post(callback);
-                try {
-                    targetDataLine_.stop();
-                    Thread.sleep(20);
-                    targetDataLine_.startRecording();
-                } catch (InterruptedException e) {
-//                    e.printStackTrace();
+                if(!mPaused) {
+	                try {
+	                    targetDataLine_.stop();
+	                    Thread.sleep(20);
+	                    targetDataLine_.startRecording();
+	                } catch (InterruptedException e) {
+	//                    e.printStackTrace();
+	                }
+                } else {
+                	targetDataLine_.release();
                 }
             }
+            /*synchronized (mPauseLock) {
+            	while (mPaused) {
+            		try {
+            			mPauseLock.wait();
+            		} catch (InterruptedException e) {
+            			e.printStackTrace();
+            		}
+            	}
+            }*/
         }
 
     }
 
     public void close(){
 //        targetDataLine_.stop();
-        targetDataLine_.release();
+    	mPaused = true;
+        //targetDataLine_.release();
     }
 
 }
