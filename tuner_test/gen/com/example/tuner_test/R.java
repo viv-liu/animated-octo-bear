@@ -19,6 +19,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int buttonBarStyle=0x7f010000;
     }
     public static final class color {
+        public static final int black_overlay=0x7f050003;
         public static final int lesson=0x7f050002;
         public static final int main=0x7f050000;
         public static final int tuner=0x7f050001;
@@ -30,15 +31,19 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int icon=0x7f020003;
     }
     public static final class id {
-        public static final int center_note=0x7f080003;
-        public static final int gauge=0x7f080005;
-        public static final int gauge_background=0x7f080001;
-        public static final int left_note=0x7f080002;
-        public static final int right_note=0x7f080004;
-        public static final int toggle_tuner=0x7f080000;
+        public static final int center_note=0x7f080006;
+        public static final int dummy_button=0x7f080002;
+        public static final int fullscreen_content=0x7f080000;
+        public static final int fullscreen_content_controls=0x7f080001;
+        public static final int gauge=0x7f080008;
+        public static final int gauge_background=0x7f080004;
+        public static final int left_note=0x7f080005;
+        public static final int right_note=0x7f080007;
+        public static final int toggle_tuner=0x7f080003;
     }
     public static final class layout {
-        public static final int main=0x7f030000;
+        public static final int activity_fullscreen=0x7f030000;
+        public static final int main=0x7f030001;
     }
     public static final class raw {
         public static final int subbacultcha=0x7f040000;

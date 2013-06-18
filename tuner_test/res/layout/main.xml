@@ -52,6 +52,7 @@
         />
     </RelativeLayout>
     <LinearLayout
+        android:orientation = "vertical"
         android:id="@+id/gauge"
         android:layout_width="wrap_content"
         android:layout_height="86sp"
