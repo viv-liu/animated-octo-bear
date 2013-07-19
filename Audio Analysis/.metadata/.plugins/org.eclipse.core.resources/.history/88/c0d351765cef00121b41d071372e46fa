@@ -1,0 +1,98 @@
+package com.audio.analysis;
+
+import java.awt.Color;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.audio.analysis.FFT;
+import com.audio.analysis.ThresholdFunction;
+import com.audio.io.WaveDecoder;
+import com.audio.visualization.PlaybackVisualizer;
+import com.audio.visualization.Plot;
+
+/**
+ * Calculates the peaks of a song and displays the resulting plot.
+ */
+public class PeakDetection 
+{
+	/**
+	 * FILE refers to the location of the audio file to be analyzed.
+	 */	
+	public static String FILE = "C:/Users/hp/Music/Brittany's Music Library/New Folder (2)/Ihatethispart.wav";	
+	
+	/**
+	 *  The threshold function is calculated using a moving average of
+	 *  the spectral flux. The thresholdMultiplier is used to scale the
+	 *  threshold function. A value of 1 will mean that the threshold
+	 *  is just the average spectral flux, however you will probably
+	 *  only want beats that are quiet a bit larger than the average to
+	 *  be detected. A recommended value for this is around 1.5,
+	 *  however it can vary based on the song. This value can also be
+	 *  used to adjust the difficulty of the game; a lower multiplier
+	 *  will have a more sensitive beat detection resulting in more
+	 *  notes, while a larger multiplier will only detect the louder
+	 *  beats.
+	 */
+	public static float thresholdMultiplier = 2f;
+	
+	/**
+	 *  HISTORY_SIZE relates to the amount of frames to include in the
+	 *  moving average calculation. A smaller value will result in a 
+	 *  more sensitive/rapidly changing moving average.
+	 */
+	public static final int HISTORY_SIZE = 50;
+
+	
+	public static void main( String[] argv ) throws Exception
+	{
+		WaveDecoder decoder = new WaveDecoder( new FileInputStream( FILE  ) );	// setup the audio file to be read using the WaveDecoder class							
+		FFT fft = new FFT( 1024, 44100 );	// set up the FFT
+		fft.window(FFT.HAMMING);	// helps to smoothen the audio data
+		float[] samples = new float[1024];	// stores the raw audio samples (done 1024 bits at a time)
+		float[] spectrum = new float[1024 / 2 + 1];	// stores the spectrum resulting from the FFT
+		float[] lastSpectrum = new float[1024 / 2 + 1]; // stores the previous spectrum which is used to calculate the spectral flux
+		List<Float> spectralFlux = new ArrayList<Float>( );	// stores spectral flux between subsequent spectrums
+		List<Float> prunedSpectralFlux = new ArrayList<Float>( ); // same as spectralFlux, but ignores negative values
+		List<Float> peaks = new ArrayList<Float>( ); // stores the peaks based on the spectral flux
+		
+		while( decoder.readSamples( samples ) > 0 )	// continues looping until the entire audio file is read
+		{			
+			fft.forward( samples );	// perform an fft on the 
+			System.arraycopy( spectrum, 0, lastSpectrum, 0, spectrum.length ); 
+			System.arraycopy( fft.getSpectrum(), 0, spectrum, 0, spectrum.length );
+			
+			float flux = 0;
+			for( int i = 0; i < spectrum.length; i++ )
+			{
+				float temp = (spectrum[i] - lastSpectrum[i]);
+				flux += temp < 0 ? 0 : temp;
+			}
+			spectralFlux.add( flux );					
+		}
+		
+        List<Float> threshold = new ArrayList<Float>( );
+        threshold = new ThresholdFunction( HISTORY_SIZE, thresholdMultiplier ).calculate( spectralFlux );
+        
+        for( int i = 0; i < threshold.size(); i++ )
+        {
+           if( threshold.get(i) <= spectralFlux.get(i) )
+              prunedSpectralFlux.add( spectralFlux.get(i) - threshold.get(i) );
+           else
+              prunedSpectralFlux.add( (float)0 );
+        }
+        
+        for( int i = 0; i < prunedSpectralFlux.size() - 1; i++ )
+        {
+           if( prunedSpectralFlux.get(i) > prunedSpectralFlux.get(i+1) )
+              peaks.add( prunedSpectralFlux.get(i) );
+           else
+              peaks.add( (float)0 );				
+        }
+        
+        Plot plot = new Plot( "Peaks", 1024, 512 );
+		plot.plot( peaks, 1, Color.red );
+		
+		new PlaybackVisualizer( plot, 1024, new WaveDecoder( new FileInputStream( FILE ) ) );
+	}
+}
