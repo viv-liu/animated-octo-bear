@@ -19,8 +19,8 @@ public class MP3PeakDetection
 	/**
 	 * FILE refers to the location of the audio file to be analyzed.
 	 */	
-	public static String FILE = "C:/Users/hp/Music/Paramore - Paramore (2013)/01 - Fast In My Car.mp3";	
-	
+	public static String FILE = "C:/Users/Shen Wang/Music/Cider Sky/01 Pieces.mp3";	
+//	public static String FILE = "C:/Users/Shen Wang/Music/Imagine Dragons/Night Visions/01 Radioactive.mp3";	
 	/**
 	 *  The threshold function is calculated using a moving average of
 	 *  the spectral flux. The thresholdMultiplier is used to scale the
@@ -34,6 +34,16 @@ public class MP3PeakDetection
 	 *  notes, while a larger multiplier will only detect the louder
 	 *  beats.
 	 */
+	
+	/**
+	 * 	Shen tested:
+	 * 	Radioactive. If put on 2, then at times it felt like there was too few beats. 
+	 * 	But at other times it still felt like there was too many beats (for our game 
+	 * 	scenario, not too many for a faster paced one).
+	 * 	When put on 1 it felt really fast.
+	 * 	On 1.5 it felt like it had all the good beats that I can easily hear but
+	 * 
+	 */
 	public static float thresholdMultiplier = 1.8f;
 	
 	/**
@@ -41,7 +51,7 @@ public class MP3PeakDetection
 	 *  moving average calculation. A smaller value will result in a 
 	 *  more sensitive/rapidly changing moving average.
 	 */
-	public static final int HISTORY_SIZE = 50;
+	public static final int HISTORY_SIZE = 100;
 
 	
 	public static void main( String[] argv ) throws Exception
