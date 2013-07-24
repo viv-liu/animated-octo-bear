@@ -53,7 +53,7 @@ public class AnimatedView extends ImageView{
 		DIP_SCALE = getResources().getDisplayMetrics().density;
 		
 		// Initialize drawables
-		m_square = new Square(0, 0, 100);
+		m_square = new Square(0, 0, 5);
 	    m_gray = new Paint();
 	    m_gray.setColor(Color.GRAY);
 		
