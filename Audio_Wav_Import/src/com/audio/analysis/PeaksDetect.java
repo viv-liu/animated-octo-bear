@@ -5,11 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Handler;
+import android.util.AttributeSet;
 
 import com.audio.analysis.FFT;
 import com.audio.analysis.ThresholdFunction;
 import com.audio.io.WaveDecoder;
-import com.example.audio_wav_import.File_R_and_W;
+import com.authorwjf.bounce.AnimatedView.Square;
+import com.authorwjf.bounce.FileIOHelper.ExternalStorageHelper;
+import com.example.audio_wav_import.FileIOHelper;
 
 /**
  * Calculates the peaks of a song and displays the resulting plot.
@@ -107,26 +114,55 @@ public class PeaksDetect extends Activity {
          * This is then converted to a string with commas separating the values to be 
          * printed.
          */
-        peaks.concat("(");
         
         for( int i = 0; i < prunedSpectralFlux.size() - 1; i++ )
         {
-           peaks.concat(",");
+           peaks.concat("/n"); //new line character
            if( prunedSpectralFlux.get(i) > prunedSpectralFlux.get(i+1) )
-              peaks.concat( String.valueOf(prunedSpectralFlux.get(i)) );
+              peaks.concat( "1" ); //1 for there is a peak
            else
-              peaks.concat( "0" );				
+              peaks.concat( "0" ); //0 for there is no peak
         }
-        peaks.concat(")");
         
         return peaks;
 	}
 /**
  * Write peaks using writeToFile function from other code.
- * @param peaks
+ * okay i have no idea how to write this file atm. got some other stuff to do. will be back at 8 to talk
+ * and figure this part out.
+ * @param peaks which is the 1's and 0's to be outputed. No intensity information is included
  */
+
 	private void Write_File(String peaks) {
-		File_R_and_W.writeToFile(peaks);
+		
+		FileIOHelper.ExternalStorageHelper();
+		FileIOHelper.makeWriteFile();
+		
 	}
+	
+	public void Write_File(Context context, String peaks)  {  
+		super(context, string);  
+		mContext = context; 
+		
+		// Initialize FileIOHelper objects
+		m_fHelper = new FileIOHelper();
+		m_esHelper = m_fHelper.new ExternalStorageHelper(context, TERRAIN_FOLDER_PATH, "DemoTerrain.csv");
+		m_esHelper.makeWriteFile();
+		peaks = new String();
+		
+		// Load terrainData into an ArrayList of 0s and 1s, of type String
+		terrainData = m_esHelper.readFromFile();
+		
+		h = new Handler();
+
+		// Set scale for Density Independent Pixels
+		DIP_SCALE = getResources().getDisplayMetrics().density;
+		
+		// Initialize drawables
+		m_square = new Square(0, 0, 100);
+	    m_gray = new Paint();
+	    m_gray.setColor(Color.GRAY);
+		
+    } 
 }
 
