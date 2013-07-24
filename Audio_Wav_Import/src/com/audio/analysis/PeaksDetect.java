@@ -4,16 +4,17 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import android.app.Activity;
 
 import com.audio.analysis.FFT;
 import com.audio.analysis.ThresholdFunction;
 import com.audio.io.WaveDecoder;
+import com.example.audio_wav_import.File_R_and_W;
 
 /**
  * Calculates the peaks of a song and displays the resulting plot.
  */
-public class Peaks {
+public class PeaksDetect extends Activity {
 	/**
 	 * FILE refers to the location of the audio file to be analyzed.
 	 */	
@@ -41,12 +42,12 @@ public class Peaks {
 	 */
 	private int HISTORY_SIZE = 50;
 
-	public Peaks( int historySize, float multiplier ){
+	public PeaksDetect( int historySize, float multiplier ){
 		this.HISTORY_SIZE = historySize;
 		this.thresholdMultiplier = multiplier;
 	}
 
-	public List<Float> calculate( String FILE_Play ) throws Exception
+	public String calculate( String FILE_Play ) throws Exception
 	{
 		WaveDecoder decoder = new WaveDecoder( new FileInputStream( FILE_Play  ) );	// setup the audio file to be read using the WaveDecoder class							
 		FFT fft = new FFT( 1024, 44100 );	// set up the FFT
@@ -56,8 +57,9 @@ public class Peaks {
 		float[] lastSpectrum = new float[1024 / 2 + 1];	// stores the previous spectrum which is used to calculate the spectral flux
 		List<Float> spectralFlux = new ArrayList<Float>( );	// stores spectral flux between subsequent spectrums
 		List<Float> prunedSpectralFlux = new ArrayList<Float>( );	// same as spectralFlux, but ignores negative values
-		List<Float> peaks = new ArrayList<Float>( );	// stores the peaks based on the spectral flux
+		// List<Float> peaks = new ArrayList<Float>( );	// stores the peaks based on the spectral flux
 		List<Float> threshold = new ArrayList<Float>( );	// stores the threshold function	
+		String peaks = new String();	// stores the peaks based on the spectral flux
 		
 		while( decoder.readSamples( samples ) > 0 )	// reads 1024 bits of the raw audio sample
 		{			
@@ -101,17 +103,30 @@ public class Peaks {
          * a given time frame with the flux of the next time frame. A peak occurs
          * if the current spectral flux is greater than the next one. The peaks
          * array list is an array of floats where any non-zero number represents
-         * a peak; the float value corresponds to the intensity of the peak.  
+         * a peak; the float value corresponds to the intensity of the peak.
+         * This is then converted to a string with commas separating the values to be 
+         * printed.
          */
+        peaks.concat("(");
+        
         for( int i = 0; i < prunedSpectralFlux.size() - 1; i++ )
         {
+           peaks.concat(",");
            if( prunedSpectralFlux.get(i) > prunedSpectralFlux.get(i+1) )
-              peaks.add( prunedSpectralFlux.get(i) );
+              peaks.concat( String.valueOf(prunedSpectralFlux.get(i)) );
            else
-              peaks.add( (float)0 );				
+              peaks.concat( "0" );				
         }
+        peaks.concat(")");
         
         return peaks;
+	}
+/**
+ * Write peaks using writeToFile function from other code.
+ * @param peaks
+ */
+	private void Write_File(String peaks) {
+		File_R_and_W.writeToFile(peaks);
 	}
 }
 

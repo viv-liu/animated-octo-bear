@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 
+import com.example.audio_wav_import.File_Write;
+import com.audio.analysis.Peaks;
+
 public class MainActivity extends Activity {
 
 	@Override
