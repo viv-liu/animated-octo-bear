@@ -3,20 +3,15 @@ package com.audio.analysis;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Handler;
-import android.util.AttributeSet;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
 
 import com.audio.analysis.FFT;
 import com.audio.analysis.ThresholdFunction;
 import com.audio.io.WaveDecoder;
-import com.authorwjf.bounce.AnimatedView.Square;
-import com.authorwjf.bounce.FileIOHelper.ExternalStorageHelper;
-import com.example.audio_wav_import.FileIOHelper;
+import com.example.audio_wav_import.R;
 
 /**
  * Calculates the peaks of a song and displays the resulting plot.
@@ -25,7 +20,7 @@ public class PeaksDetect extends Activity {
 	/**
 	 * FILE refers to the location of the audio file to be analyzed.
 	 */	
-	public static String FILE_Play = "/assets/01 Radioactive.wav";	
+	public static String FILE_Play = "/assets/test2.wav";	
 	
 	/**
 	 *  The threshold function is calculated using a moving average of
@@ -49,10 +44,26 @@ public class PeaksDetect extends Activity {
 	 */
 	private int HISTORY_SIZE = 50;
 
-	public PeaksDetect( int historySize, float multiplier ){
+	/*public PeaksDetect( int historySize, float multiplier ){
 		this.HISTORY_SIZE = historySize;
 		this.thresholdMultiplier = multiplier;
-	}
+	}*/
+	
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);        
+        setContentView(R.layout.main);
+        TextView tv = (TextView) findViewById(R.id.textView1);
+        try {
+        	tv.setText("Processing, gimme a sec.");
+			calculate(FILE_Play);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        tv.setText("All done");
+    }
 
 	public String calculate( String FILE_Play ) throws Exception
 	{
@@ -117,11 +128,13 @@ public class PeaksDetect extends Activity {
         
         for( int i = 0; i < prunedSpectralFlux.size() - 1; i++ )
         {
-           peaks.concat("/n"); //new line character
+           //peaks.concat("/n"); //new line character
            if( prunedSpectralFlux.get(i) > prunedSpectralFlux.get(i+1) )
-              peaks.concat( "1" ); //1 for there is a peak
+              //peaks.concat( "1" ); //1 for there is a peak
+        	   Log.d("Peak", "1");
            else
-              peaks.concat( "0" ); //0 for there is no peak
+              //peaks.concat( "0" ); //0 for there is no peak
+        	   Log.d("No peak", "0");
         }
         
         return peaks;
@@ -133,36 +146,5 @@ public class PeaksDetect extends Activity {
  * @param peaks which is the 1's and 0's to be outputed. No intensity information is included
  */
 
-	private void Write_File(String peaks) {
-		
-		FileIOHelper.ExternalStorageHelper();
-		FileIOHelper.makeWriteFile();
-		
-	}
-	
-	public void Write_File(Context context, String peaks)  {  
-		super(context, string);  
-		mContext = context; 
-		
-		// Initialize FileIOHelper objects
-		m_fHelper = new FileIOHelper();
-		m_esHelper = m_fHelper.new ExternalStorageHelper(context, TERRAIN_FOLDER_PATH, "DemoTerrain.csv");
-		m_esHelper.makeWriteFile();
-		peaks = new String();
-		
-		// Load terrainData into an ArrayList of 0s and 1s, of type String
-		terrainData = m_esHelper.readFromFile();
-		
-		h = new Handler();
-
-		// Set scale for Density Independent Pixels
-		DIP_SCALE = getResources().getDisplayMetrics().density;
-		
-		// Initialize drawables
-		m_square = new Square(0, 0, 100);
-	    m_gray = new Paint();
-	    m_gray.setColor(Color.GRAY);
-		
-    } 
 }
 
