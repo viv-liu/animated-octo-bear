@@ -26,7 +26,6 @@ import android.widget.Toast;
  * Author: Vivian Liu
  * Date: July 2013 */
 public class FileIOHelper {
-	public final static String EXTERNAL_DIRECTORY_PATH = "/Android/data/com.authorwjf.bounce/";
 	
 	/** External Storage interactions class */
 	// Stores files into /Android/data/com.authorwjf.bounce/ <folder> / <fileName> . csv
@@ -43,19 +42,14 @@ public class FileIOHelper {
 		private BufferedReader m_buffReader;
 		private BufferedWriter m_buffWriter;
 		
-		// NOTE: folder must have this format: "myFolder2/.../myFolder0/"
+		// NOTE: folder must have this format: "/Android/data/packageName/myFolderN/.../myFolder0/"
 		//		 fileName must have this format: "myFileName.csv"
 		public ExternalStorageHelper(Context context, String folder, String fileName) {
 			m_context = context;
 			m_fileName = fileName;
 			if(checkExternalStorageState()) {
-				if(folder.contains(EXTERNAL_DIRECTORY_PATH)) {
-					// Assume the full path is given, don't add to it
-					m_path = folder;
-				} else {
-					m_path = Environment.getExternalStorageDirectory().toString();
-					m_path += EXTERNAL_DIRECTORY_PATH + folder;
-				}
+				m_path = Environment.getExternalStorageDirectory().toString();
+				m_path += folder;
 				m_file = new File(m_path + m_fileName);
 			} else {
 				Log.e("ES: Constructor", "ExternalStorageState not accessible. USB mass storage mounted?");

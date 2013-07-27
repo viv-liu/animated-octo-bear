@@ -1,26 +1,45 @@
 package com.audio.analysis;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.audio.analysis.FFT;
 import com.audio.analysis.ThresholdFunction;
 import com.audio.io.WaveDecoder;
+import com.example.audio_wav_import.FileIOHelper;
 import com.example.audio_wav_import.R;
 
 /**
- * Calculates the peaks of a song and displays the resulting plot.
+ * Calculates the peaks of a song and stores them as 1s and 0s in .csv file
+ * - First put test2.wav (in assets) into "/Android/data/com.example.audio_wav_import/"
+ * - Find generated test2Terrain.csv in "/Android/data/com.example.audio_wav_import/Terrain/"
+ * - For test2.wav (Radioactive), generates ~2500 binary values in file, or 5KB
  */
 public class PeaksDetect extends Activity {
-	/**
-	 * FILE refers to the location of the audio file to be analyzed.
-	 */	
-	public static String FILE_Play = "/assets/test2.wav";	
+
+	// Folder to store generated terrain file
+	private static final String TERRAIN_FOLDER_PATH = "Terrain/";
+	
+	// Folder to grab .wav file to analyze
+	public final static String PACKAGE_FOLDER = "/Android/data/com.example.audio_wav_import/";	
+	public final static String FILE = "test2.wav";
+	
+	// File writing helpers
+	private FileIOHelper m_fHelper;
+	private FileIOHelper.ExternalStorageHelper m_esHelper;
 	
 	/**
 	 *  The threshold function is calculated using a moving average of
@@ -43,31 +62,114 @@ public class PeaksDetect extends Activity {
 	 *  more sensitive/rapidly changing moving average.
 	 */
 	private int HISTORY_SIZE = 50;
-
-	/*public PeaksDetect( int historySize, float multiplier ){
-		this.HISTORY_SIZE = historySize;
-		this.thresholdMultiplier = multiplier;
-	}*/
+	
+	// Views
+	private TextView tv;
+	private Button button;
+	/** Handlers are used in conjunction with "threads" which are used 
+	 *  to do calculations. 
+	 *  
+	 *  Threads are parallel programming infrastructures used to alleviate 
+	 *  the UI (which is just a special thread) of any tedious
+	 *  computations to keep the UI smooth for the user. Once a thread is 
+	 *  started, it will run on its own (often on another core) in the
+	 *  background until it finishes. The UI thread will keep running 
+	 *  on its own as if like nothing happened.
+	 *  
+	 *  Handlers are used by a thread to communicate with the UI thread,
+	 *  specifically to update UI views like TextViews and progress bars 
+	 *  and buttons, etc. You CANNOT update the UI thread in a
+	 *  background thread without a handler!  
+	 *  
+	 */
+	private Handler tvHandler;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);        
         setContentView(R.layout.main);
-        TextView tv = (TextView) findViewById(R.id.textView1);
-        try {
-        	tv.setText("Processing, gimme a sec.");
-			calculate(FILE_Play);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        // Make it look nicer with a theme, rather than black
+        setTheme(android.R.style.Theme_Holo_Light);
         
-        tv.setText("All done");
+        // Initialize views
+        tv = (TextView) findViewById(R.id.textView1);
+        button = (Button) findViewById(R.id.button1);
+        
+        // Initialize handler
+        tvHandler = new Handler();
+        
+        // Initialize file helper
+        m_fHelper = new FileIOHelper();
+        
     }
 
+	// onClick called from button in layout XML 
+	public void onClickCalculate(View view) {
+		// Get the current time in String format (appended to file name)
+        String curTime = DateFormat.format("h_mmaa", new Date()).toString();
+        
+        // Initialize external storage helper for writing
+        m_esHelper = m_fHelper.new ExternalStorageHelper(this, 
+        		PACKAGE_FOLDER + TERRAIN_FOLDER_PATH, 
+        		"test2Terrain_" + curTime + ".csv");
+        m_esHelper.makeWriteFile();
+        
+        // Construct folder path, looks something like /storage0/PACKAGE_FOLDER
+        String path = Environment.getExternalStorageDirectory().toString();
+        path += PACKAGE_FOLDER;
+        // Ensure the file system is created, if not, make it
+        File f = new File(path);
+		if(!f.exists()) {
+			f.mkdirs();
+		}
+		path += FILE;
+		f = new File(path);
+		if(!f.exists()) {
+			Log.e("Viv's FileNotFoundError", "Good job buddy you didn't " +
+					"put test.wav into " +
+					PACKAGE_FOLDER);
+			Log.d("Viv's FileNotFoundError", "That's the end of PeaksDetect.java lol.");
+			Toast.makeText(this, "test2.wav wasn't found. Look at LogCat", Toast.LENGTH_LONG).show();
+		} else {
+			button.setEnabled(false);
+	        Runnable r = new PeaksAnalysisThread(path);
+			new Thread(r).start();
+		}
+	}
+	public class PeaksAnalysisThread implements Runnable {
+		private String path;
+		public PeaksAnalysisThread(Object parameter) {
+			path = (String) parameter;
+		}
+		// The run() method is what gets executed when
+		// the thread is start()ed.
+		public void run() {
+			// Updates the textView on UI (thread) 
+			tvHandler.post(new Runnable() {
+				public void run() {
+					tv.setText("Processing, gimme a sec.");
+				}
+			});
+			try {
+				calculate(path);
+				// TODO: create a progress bar or something
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// Updates the textView on UI (thread) 
+			tvHandler.post(new Runnable() {
+				public void run() {
+					tv.setText("All done");
+					button.setEnabled(true);
+					button.setText("Do that again!");
+				}
+			});
+			
+		}
+	}
 	public String calculate( String FILE_Play ) throws Exception
 	{
-		WaveDecoder decoder = new WaveDecoder( new FileInputStream( FILE_Play  ) );	// setup the audio file to be read using the WaveDecoder class							
+		WaveDecoder decoder = new WaveDecoder(new FileInputStream( FILE_Play  ));	// setup the audio file to be read using the WaveDecoder class							
 		FFT fft = new FFT( 1024, 44100 );	// set up the FFT
 		fft.window(FFT.HAMMING);	// helps to smoothen the audio data
 		float[] samples = new float[1024];	// stores the raw audio samples (done 1024 bits at a time)
@@ -129,13 +231,19 @@ public class PeaksDetect extends Activity {
         for( int i = 0; i < prunedSpectralFlux.size() - 1; i++ )
         {
            //peaks.concat("/n"); //new line character
-           if( prunedSpectralFlux.get(i) > prunedSpectralFlux.get(i+1) )
+           if( prunedSpectralFlux.get(i) > prunedSpectralFlux.get(i+1) ) {
               //peaks.concat( "1" ); //1 for there is a peak
-        	   Log.d("Peak", "1");
-           else
+        	   m_esHelper.writeLineToFile("1");
+        	   //Log.d("Peak", "1");
+           } else {
               //peaks.concat( "0" ); //0 for there is no peak
-        	   Log.d("No peak", "0");
+        	   m_esHelper.writeLineToFile("0");
+        	   //Log.d("No peak", "0");
+           }
         }
+        Log.d("PeaksAnalysis", "Done calculating all 1s and 0s.");
+        
+        m_esHelper.close();
         
         return peaks;
 	}
