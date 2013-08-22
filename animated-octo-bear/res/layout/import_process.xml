@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000"
+    android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView_import_process"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="132dp"
+            android:padding="10dip"
+            android:text="Click Calculate to Process"
+            android:textSize="30sp" />
+
+       <Button
+           android:id="@+id/button_import_play"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/button_import_calc"
+           android:layout_centerHorizontal="true"
+           android:enabled="false"
+           android:layout_marginTop="18dp"
+           android:onClick="onClickPlay"
+           android:text="Play" />
+
+       <Button
+           android:id="@+id/button_import_calc"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/textView_import_process"
+           android:layout_centerHorizontal="true"
+           android:layout_marginTop="47dp"
+           android:onClick="onClickCalculate"
+           android:text="Calculate" />
+        
+</RelativeLayout>
