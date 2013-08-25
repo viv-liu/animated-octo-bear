@@ -11,8 +11,7 @@
         android:id="@+id/anim_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/button1" />
+        android:layout_alignParentLeft="true"/>
 
     <Button
         android:id="@+id/left"
@@ -20,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:onClick="onClickLeft"
         android:text="Left" />
     <Button
         android:id="@+id/right"
@@ -28,7 +26,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/left"
-        android:onClick="onClickRight"
         android:text="Right" />
+
+    <Button
+        android:id="@+id/attack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Attack!" />
 
 </RelativeLayout>

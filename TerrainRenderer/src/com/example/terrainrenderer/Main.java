@@ -10,7 +10,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 
 public class Main extends Activity implements OnClickListener{
-	private Button leftB, rightB;
+	private Button leftB, rightB, attackB;
 	private AnimatedView aView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +23,8 @@ public class Main extends Activity implements OnClickListener{
         leftB.setOnClickListener(this);
         rightB = (Button)findViewById(R.id.right);
         rightB.setOnClickListener(this);
+        attackB = (Button)findViewById(R.id.attack);
+        attackB.setOnClickListener(this);
         
         // Initialize AnimatedView
         aView = (AnimatedView) findViewById(R.id.anim_view);
@@ -47,6 +49,9 @@ public class Main extends Activity implements OnClickListener{
 			break;
 		case R.id.right:
 			aView.shiftWindow(AnimatedView.RIGHT);
+			break;
+		case R.id.attack:
+			aView.obliterateObstacle();
 			break;
 		}
 	}
