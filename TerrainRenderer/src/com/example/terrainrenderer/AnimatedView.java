@@ -254,7 +254,7 @@ public class AnimatedView extends ImageView{
 			isDoneScrolling = false;
 			// Initialize fileIO helpers
 			m_fHelper = new FileIOHelper();
-			m_esHelper = m_fHelper.new ExternalStorageHelper(context, TERRAIN_FOLDER_PATH, "DemoTerrain.csv");
+			m_esHelper = m_fHelper.new ExternalStorageHelper(context, TERRAIN_FOLDER_PATH, "test2Terrain_9_34PM.csv");
 			if(m_esHelper.makeReadFile()) {
 			
 				// Initialize out-of-focus arrays

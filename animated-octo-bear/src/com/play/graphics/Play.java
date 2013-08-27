@@ -14,7 +14,7 @@ public class Play extends Activity implements OnClickListener{
 	private Button leftB, rightB;
 	private AnimatedView aView;
 	private String filepath;
-	public String name;
+	private String name;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,4 +57,15 @@ public class Play extends Activity implements OnClickListener{
 			break;
 		}
 	}
+	
+	  public String getName()
+	  {
+	     return name;
+	  }
+
+	  public String getPath()
+	  {
+	     return filepath;
+	  }
+	
 }

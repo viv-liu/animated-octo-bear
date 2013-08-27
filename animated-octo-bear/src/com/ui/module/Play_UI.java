@@ -109,7 +109,7 @@ public class Play_UI extends ListActivity {
         setResult(RESULT_OK, intent);
         startActivity(intent);
     }
-    // this gets file extension as mp3 or w.e. cant seem to get the see only mp3's working atm
+    // Gets the filextension
     private String get_ext(File ff)
     {
     	String filename = ff.getName();

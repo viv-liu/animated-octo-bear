@@ -26,7 +26,7 @@ import android.widget.Toast;
  * Author: Vivian Liu
  * Date: July 2013 */
 public class FileIOHelper {
-	public final static String EXTERNAL_DIRECTORY_PATH = "/Android/data/com.example.terrainrenderer/";
+	public final static String EXTERNAL_DIRECTORY_PATH = "/Android/data/com.example.audio_wav_import/";
 	private static final int ARRAY_BUFFER_SIZE = 100;
 	/** External Storage interactions class */
 	// Stores files into /Android/data/com.example.terrainrenderer/ <folder> / <fileName> . csv

@@ -28,6 +28,11 @@ public class Import_UI extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); 
+        /*
+         * Gets Intent's from title_screen which determines the 
+         * folder path, and what extensions to verify.
+         */
+        
         Intent intent = getIntent();
         folderpath = intent.getStringExtra("folderpath");
         verifyext = intent.getStringExtra("verifyext");
@@ -52,6 +57,12 @@ public class Import_UI extends ListActivity {
 				ext = get_ext(ff);
 				if(ff.isDirectory()){
 					
+					/*
+					 * If the file is a directory
+					 * Check how many items are within it.
+					 * Add them and see the total # and
+					 * add them to the directories data structure
+					 */
 					
 					File[] fbuf = ff.listFiles(); 
 					int buf = 0;
@@ -110,7 +121,7 @@ public class Import_UI extends ListActivity {
         setResult(RESULT_OK, intent);
         startActivity(intent);
     }
-    // this gets file extension as mp3 or w.e. cant seem to get the see only mp3's working atm
+    // Gets the file extension
     private String get_ext(File ff)
     {
     	String filename = ff.getName();

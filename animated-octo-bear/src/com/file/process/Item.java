@@ -7,6 +7,16 @@ public class Item implements Comparable<Item>{
 	private String path;
 	private String image;
 	
+	/**
+	 * A convenient method of getting the files properties without needing to know the context of the UI
+	 * This allows for easy calls of the name, data, date modified, path, and image of the File
+	 * @param n: Name of File
+	 * @param d: Data of the File
+	 * @param dt: Date Modified
+	 * @param p: Filepath
+	 * @param img: Icon/Image
+	 */
+	
 	public Item(String n,String d, String dt, String p, String img)
 	{
 		name = n;
